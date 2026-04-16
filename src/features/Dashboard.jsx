@@ -2,8 +2,10 @@ import React from 'react';
 import { useClients } from '../hooks/useClients';
 import { useSales } from '../hooks/useSales';
 import { formatCurrency } from '../utils/finance';
-import { Users, FilePlus, Wallet, ArrowRight, AlertCircle, TrendingUp } from 'lucide-react';
+import { Users, FilePlus, Wallet, ArrowRight, AlertCircle, TrendingUp, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Dashboard = () => {
   const { clients } = useClients();
@@ -29,11 +31,53 @@ const Dashboard = () => {
   pendingInstallments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
   const upcoming = pendingInstallments.slice(0, 5); // top 5
 
+  const exportSalesToPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Reporte Global de Ventas y Cobros - Libreta Roja', 14, 15);
+    
+    const tableData = [];
+    
+    sales.forEach(sale => {
+      const client = clients.find(c => c.id === sale.clientId);
+      const clientName = client ? client.name : 'Cliente Eliminado';
+      const paidInstallments = sale.installments.filter(i => i.paid).length;
+      const totalInstallments = sale.installments.length;
+      const totalPaid = sale.installments.filter(i => i.paid).reduce((acc, i) => acc + i.amount + (i.surcharge || 0), 0);
+      const totalDebt = sale.installments.filter(i => !i.paid).reduce((acc, i) => acc + i.amount + (i.surcharge || 0), 0);
+
+      tableData.push([
+        clientName,
+        sale.product,
+        `${paidInstallments}/${totalInstallments}`,
+        formatCurrency(totalPaid),
+        formatCurrency(totalDebt)
+      ]);
+    });
+
+    doc.autoTable({
+      head: [['Cliente', 'Producto', 'Cuotas Pagas', 'Total Cobrado', 'Deuda']],
+      body: tableData,
+      startY: 20,
+    });
+
+    doc.save('reporte_ventas_libreta_roja.pdf');
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-      <div className="px-2">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent">Bienvenido</h2>
-        <p className="text-slate-500 mt-1">Resumen de tu negocio y cobros.</p>
+      <div className="px-2 flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent">Bienvenido</h2>
+          <p className="text-slate-500 mt-1">Resumen de tu negocio y cobros.</p>
+        </div>
+        <button 
+          onClick={exportSalesToPDF}
+          className="bg-slate-800 hover:bg-slate-900 text-white p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"
+          title="Descargar Reporte Ventas"
+        >
+          <Download size={20} />
+          <span className="hidden md:inline">Reporte Ventas</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

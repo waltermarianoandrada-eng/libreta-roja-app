@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useClients } from '../../hooks/useClients';
 import { useSales } from '../../hooks/useSales';
 import { calculateClientBalance, formatCurrency } from '../../utils/finance';
-import { UserPlus, ChevronRight } from 'lucide-react';
+import { UserPlus, ChevronRight, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { Link } from 'react-router-dom';
 
 const ClientsList = () => {
@@ -20,6 +22,28 @@ const ClientsList = () => {
     setShowForm(false);
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Reporte de Clientes y Saldos - Libreta Roja', 14, 15);
+    
+    const tableData = clients.map(client => {
+      const balance = calculateClientBalance(client.id, sales);
+      return [
+        client.name,
+        client.phone || '-',
+        formatCurrency(balance)
+      ];
+    });
+
+    doc.autoTable({
+      head: [['Nombre', 'Teléfono', 'Saldo Pendiente']],
+      body: tableData,
+      startY: 20,
+    });
+
+    doc.save('clientes_libreta_roja.pdf');
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
       <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100">
@@ -27,13 +51,23 @@ const ClientsList = () => {
           <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Tus Clientes</h2>
           <p className="text-slate-500 text-sm">Gestiona tu libreta de contactos</p>
         </div>
-        <button 
-          onClick={() => setShowForm(!showForm)}
-          className="bg-red-600 hover:bg-red-700 text-white p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95"
-        >
-          <UserPlus size={20} />
-          <span className="hidden md:inline">Nuevo Cliente</span>
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={exportToPDF}
+            className="bg-slate-800 hover:bg-slate-900 text-white p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"
+            title="Descargar PDF"
+          >
+            <Download size={20} />
+            <span className="hidden md:inline">PDF</span>
+          </button>
+          <button 
+            onClick={() => setShowForm(!showForm)}
+            className="bg-red-600 hover:bg-red-700 text-white p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-95"
+          >
+            <UserPlus size={20} />
+            <span className="hidden md:inline">Nuevo Cliente</span>
+          </button>
+        </div>
       </div>
 
       {showForm && (
