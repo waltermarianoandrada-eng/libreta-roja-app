@@ -1,0 +1,21 @@
+{
+  "name": "Libreta Roja App",
+  "short_name": "Libreta Roja",
+  "description": "Aplicacion para gestionar clientes, ventas y cuotas pendientes.",
+  "theme_color": "#dc2626",
+  "background_color": "#f8fafc",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

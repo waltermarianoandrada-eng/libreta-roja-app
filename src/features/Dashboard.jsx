@@ -5,7 +5,7 @@ import { formatCurrency } from '../utils/finance';
 import { Users, FilePlus, Wallet, ArrowRight, AlertCircle, TrendingUp, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const Dashboard = () => {
   const { clients } = useClients();
@@ -54,7 +54,7 @@ const Dashboard = () => {
       ]);
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [['Cliente', 'Producto', 'Cuotas Pagas', 'Total Cobrado', 'Deuda']],
       body: tableData,
       startY: 20,

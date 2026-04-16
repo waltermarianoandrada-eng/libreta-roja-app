@@ -14,26 +14,6 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true
-      },
-      manifest: {
-        name: 'Libreta Roja App',
-        short_name: 'Libreta Roja',
-        description: 'Aplicación para gestionar clientes, ventas y cuotas pendientes.',
-        theme_color: '#dc2626',
-        background_color: '#f8fafc',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
       }
     })
   ],

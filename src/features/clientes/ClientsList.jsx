@@ -4,7 +4,7 @@ import { useSales } from '../../hooks/useSales';
 import { calculateClientBalance, formatCurrency } from '../../utils/finance';
 import { UserPlus, ChevronRight, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { Link } from 'react-router-dom';
 
 const ClientsList = () => {
@@ -35,7 +35,7 @@ const ClientsList = () => {
       ];
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [['Nombre', 'Teléfono', 'Saldo Pendiente']],
       body: tableData,
       startY: 20,
